@@ -9,6 +9,7 @@ export const GetAllPostedJobs = async (req, res, next) => {
 
     const allJobs = await jobRequestModel.find(query);
     return res.status(200).json({ allJobs });
+
   } catch (err) {
     next(err);
   }
@@ -63,8 +64,8 @@ export const updateJobStatus = async (req, res, next) => {
     }
 
     const updatedJob = await jobRequestModel.findByIdAndUpdate(
-      id, 
-      { status }, 
+      id,
+      { status },
       { new: true, runValidators: true }
     );
 
