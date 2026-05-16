@@ -3,6 +3,8 @@ import { configDotenv } from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 
+import jobRequestRoute from "./Route/jobRequestRoute.js";
+
 configDotenv();
 
 const app = express();
@@ -13,9 +15,7 @@ app.listen(PORT, () => {
   console.log(`Server Successfully Run on Port ${PORT}`);
 });
 
-app.get("/", (req, res) => {
-  console.log("Job Poster application is running...");
-});
+app.use(express.json());
 
 (async () => {
   try {
@@ -26,3 +26,5 @@ app.get("/", (req, res) => {
     console.log("Error: ", err);
   }
 })();
+
+app.use("/api/v1/jobs", jobRequestRoute);
