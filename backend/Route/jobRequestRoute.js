@@ -3,10 +3,10 @@ import { GetAllPostedJobs, createJobPost, getJobsById, updateJobStatus, deleteJo
 
 const router = express.Router();
 
-router.get("/getAllPostedJobs", GetAllPostedJobs);
-router.post("/createJob", createJobPost);
-router.get("/getJobById/:id", getJobsById);
-router.patch("/updateStatus/:id", updateJobStatus);
-router.delete("/deleteJob/:id", deleteJobPost);
+router.get("/", GetAllPostedJobs);
+router.post("/", createJobPost);
+router.get("/:id", getJobsById);
+router.patch("/:id", updateJobStatus);
+router.delete("/:id", deleteJobPost);
 
 export default router;

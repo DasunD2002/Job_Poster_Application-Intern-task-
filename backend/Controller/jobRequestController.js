@@ -1,135 +1,94 @@
 import jobRequestModel from "../Model/jobRequestModel.js";
 
-
-export const GetAllPostedJobs = async (req, res) => {
-
+export const GetAllPostedJobs = async (req, res, next) => {
   try {
-    const allJobs = await jobRequestModel.find();
+    const { category, status } = req.query;
+    let query = {};
+    if (category) query.category = category;
+    if (status) query.status = status;
 
-    if (!allJobs) {
-      return res.status(404).json({ message: "Currently You don't have any posted jobs" });
-    }
-
+    const allJobs = await jobRequestModel.find(query);
     return res.status(200).json({ allJobs });
-
   } catch (err) {
-
-    console.log("Error: ", err);
-    return res.status(500).json({ message: "Error Occur While fetching job posts.." });
-
+    next(err);
   }
 };
 
-export const createJobPost = async (req, res) => {
-
+export const createJobPost = async (req, res, next) => {
   try {
-
     const { title, description, category, location, contactName, contactEmail } = req.body;
 
     if (!title || !description || !category || !location || !contactEmail) {
-      return res.status(400).json({ message: "values cant be empty" });
+      return res.status(400).json({ message: "Required fields are missing" });
     }
 
-    const emailFormatValidate = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailFormatValidate.test(contactEmail)) {
-      return res.status(422).json({
-        message: "Invalid email format"
-      });
-    }
-
-    const saveValues = new jobRequestModel({
+    const newJob = new jobRequestModel({
       title,
       description,
       category,
       location,
       contactName,
-      contactEmail,
-      status: `Open`
+      contactEmail
     });
 
-    const saveJob = await saveValues.save();
-
-    return res.status(201).json({ saveJob, message: "Job successfully posted" });
-
+    const savedJob = await newJob.save();
+    return res.status(201).json({ savedJob, message: "Job successfully posted" });
   } catch (err) {
-
-    console.log("Error: ", err);
-    return res.status(500).json({ message: "Error occur while posting job" });
-
+    next(err);
   }
-
 };
 
-export const getJobsById = async (req, res) => {
-
+export const getJobsById = async (req, res, next) => {
   try {
-
     const { id } = req.params;
+    const job = await jobRequestModel.findById(id);
 
-    if (!id) {
-      return res.status(400).json({ message: "Job Id isn't pass properly" });
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
     }
 
-    const getJobById = await jobRequestModel.findById(id);
-
-    if (getJobById == null) {
-      return res.status(200).json({ message: "Don't have any post related to given id" });
-    }
-
-    return res.status(200).json(getJobById);
-
+    return res.status(200).json(job);
   } catch (err) {
-    console.log("Error: ", err);
-    return res.status(500).json({ message: "Error occur while Getting jobs By ID" });
+    next(err);
   }
-
 };
 
-export const updateJobStatus = async (req, res) => {
-
+export const updateJobStatus = async (req, res, next) => {
   try {
-
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!id) {
-      return res.status(400).json({ message: "Job Id isn't pass properly" });
-    }
-
     if (!status) {
-      return res.status(400).json({ message: "Status isn't passed properly" });
+      return res.status(400).json({ message: "Status is required" });
     }
 
-    const updatedJob = await jobRequestModel.findByIdAndUpdate(id, { status }, { new: true }).lean();
+    const updatedJob = await jobRequestModel.findByIdAndUpdate(
+      id, 
+      { status }, 
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedJob) {
+      return res.status(404).json({ message: "Job not found" });
+    }
 
     return res.status(200).json(updatedJob);
-
   } catch (err) {
-    console.log("Error: ", err);
-    return res.status(500).json({ message: "Error occur while updating job" });
+    next(err);
   }
-
 };
 
-export const deleteJobPost = async (req, res) => {
-
+export const deleteJobPost = async (req, res, next) => {
   try {
-
     const { id } = req.params;
+    const deletedJob = await jobRequestModel.findByIdAndDelete(id);
 
-    if (!id) {
-      return res.status(400).json({ message: "Job Id isn't pass properly" });
+    if (!deletedJob) {
+      return res.status(404).json({ message: "Job not found" });
     }
 
-    const deleteJob = await jobRequestModel.findByIdAndDelete(id);
-
     return res.status(200).json({ message: "Job successfully deleted" });
-
   } catch (err) {
-    console.log("Error: ", err);
-    return res.status(500).json({ message: "Error occur while Deleting job" });
+    next(err);
   }
-
 };
-

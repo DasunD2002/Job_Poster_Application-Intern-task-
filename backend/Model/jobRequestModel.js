@@ -25,11 +25,14 @@ const jobRequestSchema = new schema({
   },
   contactEmail: {
     type: String,
-    required: true
+    required: true,
+    match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"]
   },
   status: {
     type: String,
-    required: true
+    required: true,
+    enum: ["Open", "In Progress", "Closed"],
+    default: "Open"
   },
   createdAt: {
     type: Date,
@@ -40,4 +43,3 @@ const jobRequestSchema = new schema({
 });
 
 export default mongoose.model("jobRequests", jobRequestSchema);
-
