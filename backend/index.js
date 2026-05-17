@@ -3,6 +3,7 @@ import { configDotenv } from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 import jobRequestRoute from "./Route/jobRequestRoute.js";
+import userRoute from "./Route/userRoute.js";
 
 configDotenv();
 
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/jobs", jobRequestRoute);
+app.use("/api/auth", userRoute);
 
 app.use((req, res, next) => {
   res.status(404).json({ message: "Resource not found" });
