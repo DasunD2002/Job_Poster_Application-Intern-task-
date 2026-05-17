@@ -1,0 +1,62 @@
+.detailsContainer {
+  max-width: 700px;
+}
+
+.metaHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.metaCategory {
+  margin-bottom: 0.5rem;
+}
+
+.statusLabel {
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.statusSelect {
+  width: auto;
+  padding: 0.4rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  margin-bottom: 0.5rem;
+}
+
+.descriptionText {
+  color: #475569;
+  white-space: pre-wrap;
+}
+
+.contactBox {
+  background: #f1f5f9;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.contactTitle {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.contactTextSpaced {
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
+}
+
+.contactText {
+  font-size: 0.9rem;
+}
+
+.deleteBtn {
+  width: 100%;
+}

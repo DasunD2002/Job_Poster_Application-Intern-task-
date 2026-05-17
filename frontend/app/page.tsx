@@ -2,19 +2,41 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import styles from "./page.module.css";
 
 export default function Home() {
+  const router = useRouter();
   const [jobs, setJobs] = useState([]);
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      const url = category ? `${API_URL}?category=${category}` : API_URL;
-      const res = await fetch(url);
+      const token = localStorage.getItem("token");
+      let baseUrl = process.env.NEXT_PUBLIC_API_URL + "/api/jobs";
+
+      if (token) {
+        baseUrl += "/myposts";
+      }
+
+      const url = category ? `${baseUrl}?category=${category}` : baseUrl;
+
+      const headers: any = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const res = await fetch(url, { headers });
       const data = await res.json();
       setJobs(data.allJobs || []);
     } catch (error) {
@@ -26,21 +48,61 @@ export default function Home() {
 
   useEffect(() => {
     fetchJobs();
-  }, [category]);
+  }, [category, isLoggedIn]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setCategory("");
+  };
 
   return (
     <div className="container">
-      <img
-        src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=1000"
-        alt="Tradesperson"
-        className="hero-image"
-      />
+      <div className="splash">
+        <div className="splash-content">
+          <h1 className="splash-title">
+            Find the Right Professional for Your Job
+          </h1>
+          <p className="splash-subtitle">
+            Connect with trusted tradespeople in your area quickly and easily.
+          </p>
+          {!isLoggedIn ? (
+            <div className={styles.buttonGroup}>
+              <Link
+                href="/login"
+                className={`btn btn-primary ${styles.heroBtn}`}
+              >
+                Get Started
+              </Link>
+            </div>
+          ) : (
+            <div className={styles.buttonGroup}>
+              <Link
+                href="/new"
+                className={`btn btn-primary ${styles.heroBtn}`}
+              >
+                Post a Job
+              </Link>
+              <button
+                onClick={handleLogout}
+                className={`btn btn-outline ${styles.logoutBtn}`}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className="header">
-        <h1 className="title">Service Requests</h1>
-        <Link href="/new" className="btn btn-primary">
-          Post a Job
-        </Link>
+        <h2 className="title">
+          {isLoggedIn ? "My Job Posts" : "Recent Service Requests"}
+        </h2>
+        {isLoggedIn && (
+          <Link href="/new" className="btn btn-primary">
+            Post a Job
+          </Link>
+        )}
       </div>
 
       <div className="filter-section">
@@ -48,7 +110,7 @@ export default function Home() {
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          style={{ width: "auto" }}
+          className={styles.filterSelect}
         >
           <option value="">All Categories</option>
           <option value="Plumbing">Plumbing</option>
@@ -67,24 +129,30 @@ export default function Home() {
               <Link
                 href={`/jobs/${job._id}`}
                 key={job._id}
-                style={{ textDecoration: "none", color: "inherit" }}
+                className={styles.cardLink}
               >
                 <div className="card">
-                  <div className="badge badge-open" style={{ float: "right" }}>
+                  <div
+                    className={`badge badge-${job.status.toLowerCase().replace(" ", "-")} ${styles.badgeFloat}`}
+                  >
                     {job.status}
                   </div>
                   <h2 className="card-title">{job.title}</h2>
                   <p className="card-meta">
                     {job.category} • {job.location}
                   </p>
-                  <p style={{ color: "#475569", fontSize: "0.9rem" }}>
+                  <p className={styles.cardDescription}>
                     {job.description.substring(0, 100)}...
                   </p>
                 </div>
               </Link>
             ))
           ) : (
-            <p>No job requests found.</p>
+            <p>
+              {isLoggedIn
+                ? "You haven't posted any jobs yet."
+                : "No job requests found."}
+            </p>
           )}
         </div>
       )}

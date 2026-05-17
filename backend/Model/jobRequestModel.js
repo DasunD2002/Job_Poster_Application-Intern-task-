@@ -8,6 +8,10 @@ const jobRequestSchema = new schema({
     type: String,
     required: true
   },
+  userId: {
+    type: String,
+    required: true
+  },
   description: {
     type: String,
     required: true

@@ -29,7 +29,8 @@ export const createJobPost = async (req, res, next) => {
       category,
       location,
       contactName,
-      contactEmail
+      contactEmail,
+      userId: req.user.id
     });
 
     const savedJob = await newJob.save();
@@ -89,6 +90,15 @@ export const deleteJobPost = async (req, res, next) => {
     }
 
     return res.status(200).json({ message: "Job successfully deleted" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getMyPosts = async (req, res, next) => {
+  try {
+    const myJobs = await jobRequestModel.find({ userId: req.user.id });
+    return res.status(200).json({ allJobs: myJobs });
   } catch (err) {
     next(err);
   }
