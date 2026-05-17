@@ -1,0 +1,33 @@
+.authPageBg {
+  background-image: url('https://tse3.mm.bing.net/th/id/OIP.vor2l3JjCJdH7wcltJ2UPgHaE8?w=1000&h=667&rs=1&pid=ImgDetMain&o=7&rm=3');
+}
+
+.errorAlert {
+  background: #fef2f2;
+  color: #ef4444;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.submitBtn {
+  width: 100%;
+}
+
+.footerText {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.footerLink {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}
